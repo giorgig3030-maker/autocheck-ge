@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="AutoCheck GE — ავტომობილის საწყისი დიაგნოსტიკის დამხმარე ქართულად.">
+<title>AutoCheck GE — ავტომობილის დიაგნოსტიკა</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--line:#26364e;--text:#eef4ff;--muted:#aab8cd;--accent:#57d6b2;--accent2:#8cb8ff;--warn:#ffd27a}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0b1220,#101a2a 60%,#0b1220);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{padding:28px 18px 20px;max-width:1000px;margin:auto} .brand{font-weight:900;letter-spacing:.4px;font-size:1.4rem}.brand span{color:var(--accent)} .tag{color:var(--muted);margin-top:5px}
+main{max-width:1000px;margin:auto;padding:0 18px 40px}.hero{padding:24px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(120deg,#14243a,#111b2d);margin-bottom:18px}
+h1{font-size:clamp(1.65rem,4vw,2.7rem);line-height:1.12;margin:0 0 12px}h2{font-size:1.25rem;margin:0 0 12px}p{margin:8px 0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:19px;margin-bottom:16px}
+label{display:block;font-weight:650;margin:12px 0 6px}input,select,textarea{width:100%;background:#0b1423;color:var(--text);border:1px solid #354861;border-radius:10px;padding:12px;font:inherit}textarea{min-height:82px;resize:vertical}
+button{border:0;border-radius:10px;background:var(--accent);color:#06231c;padding:12px 16px;font:700 1rem inherit;cursor:pointer;margin-top:12px}button.secondary{background:#233650;color:var(--text);border:1px solid #3a506c}button:hover{filter:brightness(1.06)}.actions{display:flex;flex-wrap:wrap;gap:8px}
+.result{border-left:4px solid var(--accent);padding:12px 14px;background:#0c1927;border-radius:8px;margin:12px 0}.pill{display:inline-block;color:var(--accent);border:1px solid #2c665a;border-radius:99px;padding:3px 9px;font-size:.82rem}
+.warning{border-left:4px solid var(--warn);padding:12px 14px;background:#2a2418;border-radius:8px;color:#ffebc6}.hidden{display:none}footer{max-width:1000px;margin:auto;padding:0 18px 32px;color:var(--muted);font-size:.9rem}a{color:var(--accent2)}.small{font-size:.88rem;color:var(--muted)}
+@media print{body{background:#fff;color:#111}header,main,footer{max-width:none;color:#111}.card,.hero{background:#fff;border:1px solid #aaa;color:#111}.muted,.small{color:#333}button,.no-print{display:none!important}input,select,textarea{color:#111;background:#fff;border:1px solid #aaa}.result,.warning{background:#fff;color:#111}}
+</style>
+</head>
+<body>
+<header><div class="brand">AUTO<span>CHECK</span> GE</div><div class="tag">ავტომობილის საწყისი დიაგნოსტიკის დამხმარე • ქართული ვერსია</div></header>
+<main>
+<section class="hero">
+ <span class="pill">პირველი სამუშაო ვერსია · უფასო</span>
+ <h1>იპოვე შემდეგი სწორი შემოწმება.</h1>
+ <p class="muted">აირჩიე სიმპტომი ან შეიყვანე OBD-II შეცდომის კოდი. მიიღებ საწყის შემოწმების გეგმას — არა საბოლოო დიაგნოზს.</p>
+</section>
+<div class="grid">
+<section class="card">
+<h2>1. სიმპტომით ძიება</h2>
+<label for="symptom">რა პრობლემა აქვს მანქანას?</label>
+<select id="symptom">
+<option value="start">არ იქოქება</option><option value="idle">არათანაბარი მუშაობა / ბრუნების თამაში</option><option value="power">ძალა აკლია / ცუდად აჩქარდება</option><option value="overheat">ტემპერატურა მაღლა ადის</option><option value="battery">აკუმულატორი ჯდება / დამუხტვის ეჭვი</option><option value="brake">მუხრუჭის ან ABS-ის ნათურა ანთია</option><option value="noise">უცნაური ძრავის ხმა</option>
+</select>
+<label for="fuel">ძრავის ტიპი</label><select id="fuel"><option>ბენზინი</option><option>დიზელი</option><option>ჰიბრიდი</option><option>არ ვიცი</option></select>
+<label for="notes">დამატებითი ინფორმაცია (არასავალდებულო)</label><textarea id="notes" placeholder="მაგ. ცივზე უჭირს დაქოქვა, სკანერზე კოდი..."></textarea>
+<button onclick="symptomCheck()">შემოწმების გეგმის ნახვა</button>
+<div id="symResult" aria-live="polite"></div>
+</section>
+<section class="card">
+<h2>2. OBD-II კოდით ძიება</h2>
+<label for="code">შეცდომის კოდი</label><input id="code" placeholder="მაგ. P0301" maxlength="6" autocapitalize="characters">
+<p class="small">შეიყვანე კოდი ასოებითა და ციფრებით, მაგალითად P0102 ან P0420.</p>
+<button onclick="codeCheck()">კოდის განმარტება</button>
+<div id="codeResult" aria-live="polite"></div>
+</section>
+</div>
+<section class="card">
+<h2>3. დიაგნოსტიკის ჩანაწერი</h2>
+<p class="muted">შეავსე და ამობეჭდე ან PDF-ად შეინახე ტელეფონიდან/კომპიუტერიდან.</p>
+<div class="grid">
+<div><label for="car">მარკა / მოდელი / წელი</label><input id="car" placeholder="მაგ. VW Golf, 1999"></div>
+<div><label for="engine">ძრავი</label><input id="engine" placeholder="მაგ. 1.8 ბენზინი"></div>
+<div><label for="mileage">გარბენი (თუ ცნობილია)</label><input id="mileage" placeholder="მაგ. 220000 კმ"></div>
+<div><label for="recordcode">კოდები / გაზომვები</label><input id="recordcode" placeholder="მაგ. P0102, აკუმულატორი 12.4 V"></div>
+</div>
+<label for="checks">რა შემოწმდა და რა შედეგი მივიღეთ?</label><textarea id="checks" placeholder="ჩაწერე ფაქტები და გაზომვები, არა ვარაუდები."></textarea>
+<div class="actions no-print"><button onclick="window.print()">ამობეჭდვა / PDF შენახვა</button><button class="secondary" onclick="clearForm()">გასუფთავება</button></div>
+</section>
+<div class="warning"><strong>უსაფრთხოება:</strong> ეს ინსტრუმენტი საგანმანათლებლო და საწყისი დიაგნოსტიკისთვისაა. ერთი კოდი ან სიმპტომი კონკრეტულ დაზიანებას არ ადასტურებს. არ იმუშაო მოძრავ ნაწილებთან, ცხელ გამაგრილებელ სისტემასთან ან მაღალი ძაბვის ჰიბრიდულ კომპონენტებთან. თუ მუხრუჭი, საჭე, საწვავის გაჟონვა ან ძრავის ზეთის წნევის გაფრთხილებაა, შეწყვიტე მოძრაობა უსაფრთხო ადგილას და მიმართე სპეციალისტს.</div>
+</main>
+<footer>AutoCheck GE — დამოუკიდებელი პროექტის პროტოტიპი. ავტომწარმოებლებთან არ არის დაკავშირებული. ინფორმაცია უნდა გადამოწმდეს კონკრეტული მანქანის სერვის-მანუალით.</footer>
+<script>
+const plans={
+start:{title:"არ იქოქება",steps:["დააკვირდი: სტარტერი საერთოდ ატრიალებს ძრავს თუ არა.","შეამოწმე აკუმულატორის კავშირები და კოროზია; გაზომე ძაბვა მხოლოდ უსაფრთხოდ.","თუ სტარტერი ატრიალებს, ჩაიწერე საწვავის, ნაპერწკლისა და იმობილაიზერის შესაძლო სიმპტომები.","წაიკითხე შეცდომის კოდები და შეადარე კონკრეტული მოდელის სერვის-მანუალს."],urgent:"თუ კაბელები ცხელდება, კვამლია ან საწვავის სუნი ძლიერია, შეწყვიტე შემოწმება."},
+idle:{title:"არათანაბარი მუშაობა / ბრუნების თამაში",steps:["წაიკითხე OBD-II კოდები და ჩაიწერე freeze-frame მონაცემები, თუ ხელმისაწვდომია.","ვიზუალურად შეამოწმე შემშვები ჰაერის შლანგები და ვაკუუმის მილები ბზარებზე.","დააკვირდი live data-ს: ძრავის ტემპერატურა, MAF/MAP და fuel trim — თუ სკანერი აჩვენებს.","შეამოწმე სანთლებისა და ანთების სისტემის ისტორია; ნაწილები ბრმად არ შეცვალო."],urgent:"თუ ძრავი ძლიერ კანკალებს ან Check Engine ციმციმებს, მოერიდე დატვირთვით მოძრაობას."},
+power:{title:"ძალა აკლია",steps:["წაიკითხე შენახული და pending OBD-II კოდები.","შეამოწმე ჰაერის ფილტრი და ხილული ჰაერის მილები.","დააკვირდი live data-სა და საწვავის/ანთების მონაცემებს, თუ შესაბამისი სკანერი გაქვს.","შეადარე შედეგები კონკრეტული ძრავის მწარმოებლის მონაცემებს."],urgent:"თუ ძრავი გადახურებულია, ზეთის წნევის ნათურა ანთია ან ძლიერი მექანიკური ხმა აქვს, გააჩერე უსაფრთხოდ."},
+overheat:{title:"ტემპერატურა მაღლა ადის",steps:["უსაფრთხო ადგილას გააჩერე ძრავი და აცადე სრულად გაგრილება.","ცხელ ძრავზე არ გახსნა რადიატორის ან გაფართოების ავზის თავსახური.","გაგრილების შემდეგ, მხოლოდ თუ უსაფრთხოა, შეამოწმე სითხის დონე და ხილული გაჟონვა.","ვენტილატორის, თერმოსტატის და ტუმბოს შემოწმება სერვის-მანუალით ან სპეციალისტთან დაგეგმე."],urgent:"გადახურებული მანქანით მოძრაობის გაგრძელებამ შეიძლება ძრავი დააზიანოს."},
+battery:{title:"აკუმულატორი / დამუხტვა",steps:["შეამოწმე აკუმულატორის კлемების სიმჭიდროვე და კოროზია გამორთულ მანქანაზე.","გაზომე ძაბვა სწორი დიაპაზონის მქონე მულტიმეტრით; შედეგი ჩაიწერე.","დამუხტვის სისტემის ტესტი გააკეთე შესაბამისი პროცედურით — თანამედროვე მანქანებზე ძაბვა ცვალებადია.","თუ პრობლემა მეორდება, შეამოწმე დენის გაჟონვა და აკუმულატორის მდგომარეობა სპეციალისტთან."],urgent:"არ მოხსნა აკუმულატორის კлемა ძრავის მუშაობისას."},
+brake:{title:"მუხრუჭის / ABS-ის გაფრთხილება",steps:["თუ წითელი სამუხრუჭე ნათურა ანთია ან პედალი უცნაურია, არ გააგრძელო მოძრაობა.","შეამოწმე სამუხრუჭე სითხის დონე მხოლოდ უსაფრთხო პირობებში და მანქანის ინსტრუქციის მიხედვით.","წაიკითხე ABS მოდულის კოდები შესაბამისი სკანერით — ზოგადი OBD სკანერი შეიძლება არ კმაროდეს.","კოდები შეადარე მწარმოებლის სქემასა და ტესტირების პროცედურას."],urgent:"მუხრუჭის ეფექტურობის ეჭვისას მანქანა ევაკუატორით გადაიყვანე."},
+noise:{title:"უცნაური ძრავის ხმა",steps:["ჩაიწერე, როდის ჩნდება ხმა: ცივზე, ცხელზე, აჩქარებისას თუ უქმ სვლაზე.","შეამოწმე ზეთის დონე სწორ ზედაპირზე და მწარმოებლის პროცედურით.","დაათვალიერე ხილული ფხვიერი საფარები/ქამრის მიდამო ძრავის გამორთულ მდგომარეობაში.","ხმის წყაროს დასადგენად მიმართე მექანიკოსს; მხოლოდ ხმაზე დაყრდნობით ნაწილი არ შეცვალო."],urgent:"ზეთის წნევის ნათურის, ძლიერი კაკუნის ან კვამლის შემთხვევაში ძრავი გამორთე უსაფრთხოდ."}
+};
+const codes={
+P0100:["MAF ჰაერის ნაკადის სენსორის წრედი","შეამოწმე შესაბამისი გაყვანილობა, კონექტორი და მწარმოებლის ტესტი. მიზეზი მხოლოდ სენსორი არ არის."],
+P0101:["MAF დიაპაზონი/მუშაობა","შეამოწმე ჰაერის გაჟონვა, ფილტრი, გაყვანილობა და live data."],
+P0102:["MAF დაბალი სიგნალი","შეამოწმე კვება/მასა/სიგნალის წრედი სქემის მიხედვით; სენსორი ბრმად არ შეცვალო."],
+P0112:["შემომავალი ჰაერის ტემპერატურის სენსორის დაბალი სიგნალი","შეამოწმე კონექტორი, გაყვანილობა და სენსორის მონაცემი."],
+P0115:["ძრავის გამაგრილებლის ტემპერატურის სენსორის წრედი","შეადარე ცივი ძრავის ტემპერატურის მონაცემი გარემოს ტემპერატურას და შეამოწმე წრედი."],
+P0300:["შემთხვევითი/მრავალცილინდრიანი წყვეტა","შეამოწმე კოდები, სანთლები, ანთება, ჰაერის გაჟონვა და საწვავის მონაცემები."],
+P0301:["პირველი ცილინდრის წყვეტა","შეამოწმე ცილინდრის ანთება/სანთელი/კოჭა და მექანიკური მდგომარეობა პროცედურის მიხედვით."],
+P0420:["კატალიზატორის ეფექტურობა ზღვარზე დაბალია","შეამოწმე გამონაბოლქვის გაჟონვა, ჟანგბადის სენსორების მონაცემები და ძრავის მუშაობა."],
+P0500:["ავტომობილის სიჩქარის სენსორის სიგნალი","შეამოწმე სიჩქარის სიგნალის წყარო, კონექტორები და შესაბამისი მოდულის კოდები."],
+P0171:["ნარევი ზედმეტად ღარიბია — Bank 1","შეამოწმე ჰაერის გაჟონვა, საწვავის მიწოდება და fuel trim."],
+P0172:["ნარევი ზედმეტად მდიდარია — Bank 1","შეამოწმე სენსორების მონაცემები, საწვავის წნევა და ინჟექტორები შესაბამისი პროცედურით."]
+};
+function symptomCheck(){const p=plans[document.getElementById('symptom').value];document.getElementById('symResult').innerHTML='<div class="result"><strong>'+p.title+'</strong><ol>'+p.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol><p><strong>გაფრთხილება:</strong> '+p.urgent+'</p></div>'}
+function codeCheck(){let c=document.getElementById('code').value.trim().toUpperCase();let out=document.getElementById('codeResult');if(!/^[PBCU][0-9A-F]{4}$/.test(c)){out.innerHTML='<div class="warning">შეიყვანე სწორი ფორმატის 5-ნიშნა OBD-II კოდი, მაგალითად P0301.</div>';return}if(codes[c]){out.innerHTML='<div class="result"><strong>'+c+' — '+codes[c][0]+'</strong><p>'+codes[c][1]+'</p><p class="small">ეს ზოგადი განმარტებაა; ზუსტი მნიშვნელობა შეიძლება მარკისა და მოდელის მიხედვით განსხვავდებოდეს.</p></div>'}else{out.innerHTML='<div class="result"><strong>'+c+'</strong><p>ამ კოდისთვის ამ ვერსიაში განმარტება ჯერ არ გვაქვს. ჩაიწერე კოდი ზუსტად და გადაამოწმე კონკრეტული მანქანის სერვის-მანუალში ან სანდო დიაგნოსტიკურ წყაროში.</p></div>'}}
+function clearForm(){['car','engine','mileage','recordcode','checks','notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('symResult').innerHTML='';document.getElementById('codeResult').innerHTML=''}
+</script>
+</body></html>
